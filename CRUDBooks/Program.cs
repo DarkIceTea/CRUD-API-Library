@@ -1,4 +1,11 @@
 using CRUDBooks.Models;
+using Microsoft.EntityFrameworkCore;
+using CRUDBooks.Data;
+using CRUDBooks.Controllers;
+using Azure.Core;
+using Azure;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace CRUDBooks
 {
@@ -7,18 +14,29 @@ namespace CRUDBooks
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // получаем строку подключения из файла конфигурации
+            string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            // добавляем контекст ApplicationContext в качестве сервиса в приложение
+            builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+
             var app = builder.Build();
 
-            //app.MapGet("/", () => "Hello World!");
-            app.Run(GetAllBooks);
-            
+            // Добавляем контроллер для работы с книгами
+            app.MapGet("/books", BookController.GetAllBooks); // Обработка запроса на получение всех книг
+            //app.MapGet("/{id}", GetBookById); // Обработка запроса на получение книги по Id
+            //app.MapPost("", CreateBook); // Обработка запроса на создание новой книги
+            //app.MapPut("/{id}", UpdateBook); // Обработка запроса на обновление книги по Id
+            //app.MapDelete("/{id}", DeleteBook); // Обработка запроса на удаление книги по Id
+
+
 
             app.Run();
         }
-        public static async Task GetAllBooks(HttpContext context)
+
+        public static async Task GetBook(HttpContext context, Book book)
         {
-            List<Book> books = new List<Book>();
-            context.Response.WriteAsJsonAsync(books);
+            context.Response.WriteAsJsonAsync(book);
         }
     }
 }
