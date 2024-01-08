@@ -1,4 +1,5 @@
 ﻿using CRUDBooks.Data;
+using CRUDBooks.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUDBooks.Controllers
@@ -16,6 +17,19 @@ namespace CRUDBooks.Controllers
         {
             var books = await dbContext.Books.ToListAsync();
             await context.Response.WriteAsJsonAsync(books);
+        }
+
+        public static async Task GetBookById(int id, HttpContext context, DataContext dbContext)
+        {
+            Book book = await dbContext.Books.FindAsync(id);
+            if (book == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else
+            {
+                context.Response.WriteAsJsonAsync(book);
+            }
         }
     }
 }
