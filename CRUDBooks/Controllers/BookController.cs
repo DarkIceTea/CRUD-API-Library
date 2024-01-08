@@ -28,7 +28,19 @@ namespace CRUDBooks.Controllers
             }
             else
             {
-                context.Response.WriteAsJsonAsync(book);
+                await context.Response.WriteAsJsonAsync(book);
+            }
+        }
+        public static async Task GetBookByISBN(string isbn, HttpContext context, DataContext dbContext)
+        {
+            Book book = await dbContext.Books.FirstAsync(b => b.ISBN == isbn);
+            if (book == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else
+            {
+                await context.Response.WriteAsJsonAsync(book);
             }
         }
     }

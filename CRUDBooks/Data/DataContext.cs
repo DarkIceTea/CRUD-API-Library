@@ -15,8 +15,9 @@ namespace CRUDBooks.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Book>().HasData(
-                    new Book { Id = 1, Title = "Crime and panishment", Author = "Dostoevsky", Description = "about roskolnikov", Genre = "Drama", ISBN = "111", WhenTake = DateTime.Now, WhenReturn = DateTime.Now.AddMonths(1) }
-            );
+                    new Book { Id = 1, Title = "Crime and panishment", Author = "Dostoevsky", Description = "about roskolnikov", Genre = "Drama", ISBN = "978-5-93673-265-2", WhenTake = DateTime.Now, WhenReturn = DateTime.Now.AddMonths(1) },
+                    new Book { Id = 2, Title = "Dead Souls", Author = "Gogol", Description = "about Chichikov", Genre = "Satire", ISBN = "978-5-93673-435-2", WhenTake = DateTime.Now, WhenReturn = DateTime.Now.AddMonths(1) }
+                    );
         }
     }
 }
