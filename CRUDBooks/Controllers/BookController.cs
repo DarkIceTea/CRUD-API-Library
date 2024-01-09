@@ -55,7 +55,30 @@ namespace CRUDBooks.Controllers
                 dbContext.Books.Add(book);
                 await dbContext.SaveChangesAsync(true);
             }
-
+        }
+        public static async Task EditBook(int id, HttpContext context, DataContext dbContext)
+        {
+            Book updateBook = await context.Request.ReadFromJsonAsync<Book>();
+            if (updateBook == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return;
+            }
+            Book existingBook = dbContext.Books.Find(id);
+            if (existingBook == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
+            }
+            existingBook.Title = updateBook.Title ?? existingBook.Title;
+            existingBook.Author = updateBook.Author ?? existingBook.Author;
+            existingBook.ISBN = updateBook.ISBN ?? existingBook.ISBN;
+            existingBook.Description = updateBook.Description ?? existingBook.Description;
+            existingBook.Genre = updateBook.Genre ?? existingBook.Genre;
+            existingBook.WhenTake = updateBook.WhenTake != default ? updateBook.WhenTake : existingBook.WhenTake;
+            existingBook.WhenReturn = updateBook.WhenReturn != default ? updateBook.WhenReturn : existingBook.WhenReturn;
+            dbContext.Update(existingBook);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
