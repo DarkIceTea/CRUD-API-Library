@@ -64,7 +64,7 @@ namespace CRUDBooks.Controllers
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return;
             }
-            Book existingBook = dbContext.Books.Find(id);
+            Book existingBook = await dbContext.Books.FindAsync(id);
             if (existingBook == null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -79,6 +79,20 @@ namespace CRUDBooks.Controllers
             existingBook.WhenReturn = updateBook.WhenReturn != default ? updateBook.WhenReturn : existingBook.WhenReturn;
             dbContext.Update(existingBook);
             await dbContext.SaveChangesAsync();
+        }
+        public static async Task DeleteBook(int id, HttpContext context, DataContext dbContext)
+        {
+            Book book = await dbContext.Books.FindAsync(id);
+            if (book == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else
+            {
+                dbContext.Books.Remove(book);
+                dbContext.SaveChanges();
+                context.Response.StatusCode = StatusCodes.Status200OK;
+            }
         }
     }
 }
