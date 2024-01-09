@@ -26,7 +26,7 @@ namespace CRUDBooks
             app.MapGet("/books", BookController.GetAllBooks); // Обработка запроса на получение всех книг
             app.MapGet("book/{id}", BookController.GetBookById); // Обработка запроса на получение книги по Id
             app.MapGet("book/ISBN/{isbn}", BookController.GetBookByISBN); // Обработка запроса на получение книги по ISBN
-            //app.MapPost("", CreateBook); // Обработка запроса на создание новой книги
+            app.MapPost("book/add", BookController.AddBook); // Обработка запроса на создание новой книги
             //app.MapPut("/{id}", UpdateBook); // Обработка запроса на обновление книги по Id
             //app.MapDelete("/{id}", DeleteBook); // Обработка запроса на удаление книги по Id
 

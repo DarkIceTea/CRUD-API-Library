@@ -43,5 +43,19 @@ namespace CRUDBooks.Controllers
                 await context.Response.WriteAsJsonAsync(book);
             }
         }
+        public static async Task AddBook(HttpContext context, DataContext dbContext)
+        {
+            Book book = await context.Request.ReadFromJsonAsync<Book>();
+            if (book == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            }
+            else
+            {
+                dbContext.Books.Add(book);
+                await dbContext.SaveChangesAsync(true);
+            }
+
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace CRUDBooks.Data
         public DbSet<Book> Books { get; set; } = null!;
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
