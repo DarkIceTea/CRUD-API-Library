@@ -55,7 +55,7 @@ namespace CRUDBooks
             app.MapPost("book/add", BookController.AddBook); // Обработка запроса на создание новой книги
             app.MapPut("book/{id}", BookController.EditBook); // Обработка запроса на обновление книги по Id
             app.MapDelete("book/{id}", BookController.DeleteBook); // Обработка запроса на удаление книги по Id
-            app.MapGet("/login", AccountController.LoginAuthentication);
+            app.MapPost("/login", AccountController.LoginAuthentication);
 
             app.Run();
         }
