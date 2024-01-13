@@ -13,9 +13,28 @@ namespace CRUDBooks.Controllers
 {
     public class AccountController
     {
+        public static async Task Regestration(HttpContext context, DataContext db)
+        {
+            User user = await context.Request.ReadFromJsonAsync<User>();
+            if (user == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;  //Не удалось десериализовать объект User
+                return;
+            }   
+            if(db.Users.FirstOrDefault(u => u.Login == user.Login) is not null)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;  //Пользователь уже существует
+                return;
+            }
+            user.Password = HashPassword(user.Password);
+            db.Add(user);
+            db.SaveChanges();
+        }
+
         public static async Task LoginAuthentication(HttpContext context, DataContext db)
         {
             //User userFromClient = new User() { Id = 1, Login = "Konstantin", Password = "12345" };
+
             User userFromClient = await context.Request.ReadFromJsonAsync<User>();
             User userFromDb = db.Users.FirstOrDefault(u =>  u.Login == userFromClient.Login);
             if (userFromDb == null)
