@@ -15,15 +15,15 @@ namespace CRUDBooks.Controllers
     {
         public static async Task LoginAuthentication(HttpContext context, DataContext db)
         {
-            User userFromClient = new User() { Id = 1, Login = "Konstantin", Password = "12345" };
-            //user = await context.Request.ReadFromJsonAsync<User>();
+            //User userFromClient = new User() { Id = 1, Login = "Konstantin", Password = "12345" };
+            User userFromClient = await context.Request.ReadFromJsonAsync<User>();
             User userFromDb = db.Users.FirstOrDefault(u =>  u.Login == userFromClient.Login);
             if (userFromDb == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
-            if(!(VerifyPassword(userFromClient.Password, HashPassword(userFromDb.Password))))
+            if(!(VerifyPassword(userFromClient.Password, userFromDb.Password)))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
@@ -61,7 +61,7 @@ namespace CRUDBooks.Controllers
                 salt: new byte[0], // Пустая соль
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 10000,
-                numBytesRequested: 256 / 8);
+                numBytesRequested: 256 / 8); 
 
             // Сравнение хешей
             return actualHash.SequenceEqual(Convert.FromBase64String(hashedPassword));
