@@ -10,7 +10,7 @@ namespace CRUDBooks.Controllers
 {
     public class AccountController
     {
-        public static async Task<string> LoginAuthentication(HttpContext context)
+        public static async Task LoginAuthentication(HttpContext context)
         {
             User user = new User() { Id = 1, Login = "Ivan", Password = "123" };
             //user = await context.Request.ReadFromJsonAsync<User>();
@@ -23,7 +23,7 @@ namespace CRUDBooks.Controllers
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), // время действия 2 минуты
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
+            await context.Response.WriteAsync(new JwtSecurityTokenHandler().WriteToken(jwt));
         }
     }
 }

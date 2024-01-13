@@ -55,21 +55,7 @@ namespace CRUDBooks
             app.MapPost("book/add", BookController.AddBook); // ќбработка запроса на создание новой книги
             app.MapPut("book/{id}", BookController.EditBook); // ќбработка запроса на обновление книги по Id
             app.MapDelete("book/{id}", BookController.DeleteBook); // ќбработка запроса на удаление книги по Id
-            app.MapGet("/login", async (HttpContext context) =>
-            {
-                User user = new User() { Id = 1, Login = "Ivan", Password = "123" };
-                //user = await context.Request.ReadFromJsonAsync<User>();
-
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Login) };
-                var jwt = new JwtSecurityToken(
-                        issuer: AuthOptions.ISSUER,
-                        audience: AuthOptions.AUDIENCE,
-                        claims: claims,
-                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), // врем€ действи€ 2 минуты
-                        signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
-                return new JwtSecurityTokenHandler().WriteToken(jwt);
-            });
+            app.MapGet("/login", AccountController.LoginAuthentication);
 
             app.Run();
         }
