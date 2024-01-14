@@ -44,19 +44,25 @@ namespace CRUDBooks
                 };
             });    // подключение аутентификации с помощью jwt-токенов
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));    // добавляем контекст ApplicationContext в качестве сервиса в приложение
+            builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
             app.UseAuthentication();
+            app.UseRouting();
             app.UseAuthorization();
-            app.MapGet("/books", BookController.GetAllBooks); // Обработка запроса на получение всех книг
-            app.MapGet("book/{id}", BookController.GetBookById); // Обработка запроса на получение книги по Id
-            app.MapGet("book/ISBN/{isbn}", BookController.GetBookByISBN); // Обработка запроса на получение книги по ISBN
-            app.MapPost("book/add", BookController.AddBook); // Обработка запроса на создание новой книги
-            app.MapPut("book/{id}", BookController.EditBook); // Обработка запроса на обновление книги по Id
-            app.MapDelete("book/{id}", BookController.DeleteBook); // Обработка запроса на удаление книги по Id
-            app.MapPost("/login", AccountController.LoginAuthentication);
-            app.MapPost("/registration", AccountController.Regestration);
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            
+
+            //app.MapGet("/books", BookController.GetAllBooks); // Обработка запроса на получение всех книг
+            //app.MapGet("book/{id}", BookController.GetBookById); // Обработка запроса на получение книги по Id
+            //app.MapGet("book/ISBN/{isbn}", BookController.GetBookByISBN); // Обработка запроса на получение книги по ISBN
+            //app.MapPost("book/add", BookController.AddBook); // Обработка запроса на создание новой книги
+            //app.MapPut("book/{id}", BookController.EditBook); // Обработка запроса на обновление книги по Id
+            //app.MapDelete("book/{id}", BookController.DeleteBook); // Обработка запроса на удаление книги по Id
+            //app.MapPost("/login", AccountController.LoginAuthentication);
+            //app.MapPost("/registration", AccountController.Regestration);
 
             app.Run();
         }

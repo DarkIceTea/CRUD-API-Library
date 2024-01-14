@@ -3,76 +3,96 @@ using CRUDBooks.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CRUDBooks.Controllers
 {
     // Добавляем контроллер для работы с книгами
-    public class BookController
+    [ApiController]
+    //[Route("[Controller]")]
+    public class BookController : Controller
     {
-        private readonly DataContext db;
-        public BookController(DataContext context)
+        private readonly DataContext dataContext;
+        private readonly HttpContext httpContext;
+        public BookController(DataContext dataContext, IHttpContextAccessor accessor)
         {
-            db = context;
+            this.dataContext = dataContext;
+            httpContext = accessor.HttpContext;
         }
+
+        //Получение всех книг
+        [HttpGet("/books")]
         [Authorize]
-        public static async Task GetAllBooks(HttpContext context, DataContext dbContext)
+        public async Task GetAllBooks()
         {
-            var books = await dbContext.Books.ToListAsync();
-            await context.Response.WriteAsJsonAsync(books);
+            var books = await dataContext.Books.ToListAsync();
+            await httpContext.Response.WriteAsJsonAsync(books);
         }
+
+        //Получение книги по id
+        [HttpGet("/book/{id}")]
         [Authorize]
-        public static async Task GetBookById(int id, HttpContext context, DataContext dbContext)
+        public async Task GetBookById(int id)
         {
-            Book book = await dbContext.Books.FindAsync(id);
+            Book book = await dataContext.Books.FindAsync(id);
             if (book == null)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             }
             else
             {
-                await context.Response.WriteAsJsonAsync(book);
+                await httpContext.Response.WriteAsJsonAsync(book);
             }
         }
+
+        //Получение книги по ISBN
+        [HttpGet("/book/ISBN/{isbn}")]
         [Authorize]
-        public static async Task GetBookByISBN(string isbn, HttpContext context, DataContext dbContext)
+        public async Task GetBookByISBN(string isbn)
         {
-            Book book = await dbContext.Books.FirstAsync(b => b.ISBN == isbn);
+            Book book = await dataContext.Books.FirstAsync(b => b.ISBN == isbn);
             if (book == null)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             }
             else
             {
-                await context.Response.WriteAsJsonAsync(book);
+                await HttpContext.Response.WriteAsJsonAsync(book);
             }
         }
+
+        //Добавление книги
+        [HttpPost("/book")]
         [Authorize]
-        public static async Task AddBook(HttpContext context, DataContext dbContext)
+        public async Task AddBook()
         {
-            Book book = await context.Request.ReadFromJsonAsync<Book>();
+            Book book = await HttpContext.Request.ReadFromJsonAsync<Book>();
             if (book == null)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
             else
             {
-                dbContext.Books.Add(book);
-                await dbContext.SaveChangesAsync(true);
+                dataContext.Books.Add(book);
+                await dataContext.SaveChangesAsync(true);
             }
         }
+
+        //Редактирование книги
+        [HttpPut("/book/{id}")]
         [Authorize]
-        public static async Task EditBook(int id, HttpContext context, DataContext dbContext)
+        public async Task EditBook(int id)
         {
-            Book updateBook = await context.Request.ReadFromJsonAsync<Book>();
+            Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
             if (updateBook == null)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return;
             }
-            Book existingBook = await dbContext.Books.FindAsync(id);
+            Book existingBook = await dataContext.Books.FindAsync(id);
             if (existingBook == null)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                 return;
             }
             existingBook.Title = updateBook.Title ?? existingBook.Title;
@@ -82,22 +102,25 @@ namespace CRUDBooks.Controllers
             existingBook.Genre = updateBook.Genre ?? existingBook.Genre;
             existingBook.WhenTake = updateBook.WhenTake != default ? updateBook.WhenTake : existingBook.WhenTake;
             existingBook.WhenReturn = updateBook.WhenReturn != default ? updateBook.WhenReturn : existingBook.WhenReturn;
-            dbContext.Update(existingBook);
-            await dbContext.SaveChangesAsync();
+            dataContext.Update(existingBook);
+            await dataContext.SaveChangesAsync();
         }
+
+        //Удалениие книги
+        [HttpDelete("/book/{id}")]
         [Authorize]
-        public static async Task DeleteBook(int id, HttpContext context, DataContext dbContext)
+        public async Task DeleteBook(int id)
         {
-            Book book = await dbContext.Books.FindAsync(id);
+            Book book = await dataContext.Books.FindAsync(id);
             if (book == null)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             }
             else
             {
-                dbContext.Books.Remove(book);
-                dbContext.SaveChanges();
-                context.Response.StatusCode = StatusCodes.Status200OK;
+                dataContext.Books.Remove(book);
+                dataContext.SaveChanges();
+                httpContext.Response.StatusCode = StatusCodes.Status200OK;
             }
         }
     }

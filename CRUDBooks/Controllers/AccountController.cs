@@ -8,43 +8,55 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CRUDBooks.Controllers
 {
-    public class AccountController
+    [ApiController]
+    public class AccountController : Controller
     {
-        public static async Task Regestration(HttpContext context, DataContext db)
+        private readonly HttpContext httpContext;
+        private readonly DataContext dataContext;
+
+        public AccountController(IHttpContextAccessor httpContext, DataContext dataContext)
         {
-            User user = await context.Request.ReadFromJsonAsync<User>();
+            this.httpContext = httpContext.HttpContext;
+            this.dataContext = dataContext;
+        }
+        [HttpGet("/registration")]
+        public async Task Regestration()
+        {
+            User user = await httpContext.Request.ReadFromJsonAsync<User>();
             if (user == null)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;  //Не удалось десериализовать объект User
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;  //Не удалось десериализовать объект User
                 return;
             }   
-            if(db.Users.FirstOrDefault(u => u.Login == user.Login) is not null)
+            if(dataContext.Users.FirstOrDefault(u => u.Login == user.Login) is not null)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;  //Пользователь уже существует
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;  //Пользователь уже существует
                 return;
             }
             user.Password = HashPassword(user.Password);
-            db.Add(user);
-            db.SaveChanges();
+            dataContext.Add(user);
+            dataContext.SaveChanges();
         }
 
-        public static async Task LoginAuthentication(HttpContext context, DataContext db)
+        [HttpGet("/login")]
+        public async Task LoginAuthentication()
         {
             //User userFromClient = new User() { Id = 1, Login = "Konstantin", Password = "12345" };
 
-            User userFromClient = await context.Request.ReadFromJsonAsync<User>();
-            User userFromDb = db.Users.FirstOrDefault(u =>  u.Login == userFromClient.Login);
+            User userFromClient = await httpContext.Request.ReadFromJsonAsync<User>();
+            User userFromDb = dataContext.Users.FirstOrDefault(u =>  u.Login == userFromClient.Login);
             if (userFromDb == null)
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
             if(!(VerifyPassword(userFromClient.Password, userFromDb.Password)))
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
             
@@ -56,10 +68,10 @@ namespace CRUDBooks.Controllers
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), // время действия 2 минуты
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
-            await context.Response.WriteAsync(new JwtSecurityTokenHandler().WriteToken(jwt));
+            await httpContext.Response.WriteAsync(new JwtSecurityTokenHandler().WriteToken(jwt));
         }
 
-        private static string HashPassword(string password)
+        private string HashPassword(string password)
         {
             // Хеширование пароля без использования соли
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -72,7 +84,7 @@ namespace CRUDBooks.Controllers
             return hashed;
         }
 
-        private static bool VerifyPassword(string enteredPassword, string hashedPassword)
+        private bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
             // Проверка введенного пароля с использованием хеша из базы данных
             var actualHash = KeyDerivation.Pbkdf2(
