@@ -12,6 +12,9 @@ using CRUDBooks.Properties;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using CRUDBooks.Handlers;
+using CRUDBooks.Queries;
+using CRUDBooks.Commands;
 
 namespace CRUDBooks
 {
@@ -43,9 +46,21 @@ namespace CRUDBooks
                     ValidateIssuerSigningKey = true,
                 };
             });    // подключение аутентификации с помощью jwt-токенов
-            builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));    // добавляем контекст ApplicationContext в качестве сервиса в приложение
+            builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);    // добавляем контекст ApplicationContext в качестве сервиса в приложение
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
+
+            //Регистрация обработчиков запросов
+            builder.Services.AddTransient<IQueryHandler<GetAllBooksQuery, List<Book>>, GetAllBooksQueryHandler>();
+            builder.Services.AddTransient<IQueryHandler<GetBookByIdQuery, Book>, GetBookByIdQueryHandler>();
+            builder.Services.AddTransient<IQueryHandler<GetBookByISBNQuery, Book>, GetBookByISBNQueryHandler>();
+            builder.Services.AddSingleton<IQueryDispatcher, QueryDispatcher>();
+
+            // Регистрация обработчиков команд
+            builder.Services.AddTransient<ICommandHandler<AddBookCommand>, AddBookCommandHandler>();
+            builder.Services.AddTransient<ICommandHandler<EditBookCommand>, EditBookCommandHandler>();
+            builder.Services.AddTransient<ICommandHandler<DeleteBookCommand>, DeleteBookCommandHandler>();
+            builder.Services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 
             var app = builder.Build();
 

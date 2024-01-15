@@ -1,9 +1,10 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using CRUDBooks.Queries;
+using CRUDBooks.Commands;
 
 namespace CRUDBooks.Controllers
 {
@@ -12,115 +13,110 @@ namespace CRUDBooks.Controllers
     //[Route("[Controller]")]
     public class BookController : Controller
     {
-        private readonly DataContext dataContext;
+        private readonly ICommandDispatcher _commandDispatcher;
+        private readonly IQueryDispatcher _queryDispatcher;
         private readonly HttpContext httpContext;
-        public BookController(DataContext dataContext, IHttpContextAccessor accessor)
+
+        public BookController(IHttpContextAccessor accessor, IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
         {
-            this.dataContext = dataContext;
             httpContext = accessor.HttpContext;
+            _queryDispatcher = queryDispatcher;
+            _commandDispatcher = commandDispatcher;
         }
 
         //Получение всех книг
         [HttpGet("/books")]
-        [Authorize]
+        //[Authorize]
         public async Task GetAllBooks()
         {
-            var books = await dataContext.Books.ToListAsync();
+            //var books = await dataContext.Books.ToListAsync();
+            //await httpContext.Response.WriteAsJsonAsync(books);
+            var query = new GetAllBooksQuery();
+            var books = _queryDispatcher.Execute<GetAllBooksQuery, List<Book>>(query);
             await httpContext.Response.WriteAsJsonAsync(books);
         }
 
         //Получение книги по id
         [HttpGet("/book/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task GetBookById(int id)
         {
-            Book book = await dataContext.Books.FindAsync(id);
-            if (book == null)
+            var query = new GetBookByIdQuery() {BookId = id};
+            Book book = _queryDispatcher.Execute<GetBookByIdQuery, Book>(query);
+            if (book is null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
             }
-            else
-            {
-                await httpContext.Response.WriteAsJsonAsync(book);
-            }
+            await httpContext.Response.WriteAsJsonAsync(book);
         }
 
         //Получение книги по ISBN
         [HttpGet("/book/ISBN/{isbn}")]
-        [Authorize]
+        //[Authorize]
         public async Task GetBookByISBN(string isbn)
         {
-            Book book = await dataContext.Books.FirstAsync(b => b.ISBN == isbn);
-            if (book == null)
+            var query = new GetBookByISBNQuery() { ISBN = isbn};
+            var book = _queryDispatcher.Execute<GetBookByISBNQuery, Book>(query);
+            if (book is null)
             {
-                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
             }
-            else
-            {
-                await HttpContext.Response.WriteAsJsonAsync(book);
-            }
+            await httpContext.Response.WriteAsJsonAsync(book);
         }
 
         //Добавление книги
         [HttpPost("/book")]
-        [Authorize]
+        //[Authorize]
         public async Task AddBook()
         {
-            Book book = await HttpContext.Request.ReadFromJsonAsync<Book>();
-            if (book == null)
+            Book book = await httpContext.Request.ReadFromJsonAsync<Book>();
+            if (book is null)
             {
-                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return;
             }
-            else
-            {
-                dataContext.Books.Add(book);
-                await dataContext.SaveChangesAsync(true);
-            }
+            var command = new AddBookCommand { Book = book };
+            _commandDispatcher.Execute(command);
         }
 
         //Редактирование книги
         [HttpPut("/book/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task EditBook(int id)
         {
             Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
-            if (updateBook == null)
+            if (updateBook is null)
             {
-                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return;
             }
-            Book existingBook = await dataContext.Books.FindAsync(id);
-            if (existingBook == null)
+
+            try
+            {
+                var command = new EditBookCommand { Id = id, UpdateBook = updateBook };
+                _commandDispatcher.Execute(command);
+            }
+            catch (Exception ex)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
             }
-            existingBook.Title = updateBook.Title ?? existingBook.Title;
-            existingBook.Author = updateBook.Author ?? existingBook.Author;
-            existingBook.ISBN = updateBook.ISBN ?? existingBook.ISBN;
-            existingBook.Description = updateBook.Description ?? existingBook.Description;
-            existingBook.Genre = updateBook.Genre ?? existingBook.Genre;
-            existingBook.WhenTake = updateBook.WhenTake != default ? updateBook.WhenTake : existingBook.WhenTake;
-            existingBook.WhenReturn = updateBook.WhenReturn != default ? updateBook.WhenReturn : existingBook.WhenReturn;
-            dataContext.Update(existingBook);
-            await dataContext.SaveChangesAsync();
         }
 
         //Удалениие книги
         [HttpDelete("/book/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task DeleteBook(int id)
         {
-            Book book = await dataContext.Books.FindAsync(id);
-            if (book == null)
+            try
+            {
+                var command = new DeleteBookCommand { Id = id };
+                _commandDispatcher.Execute(command);
+            }
+            catch (Exception ex)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            }
-            else
-            {
-                dataContext.Books.Remove(book);
-                dataContext.SaveChanges();
-                httpContext.Response.StatusCode = StatusCodes.Status200OK;
             }
         }
     }
