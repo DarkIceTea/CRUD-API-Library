@@ -29,6 +29,7 @@ namespace CRUDBooks.Handlers
             existingBook.Genre = command.UpdateBook.Genre ?? existingBook.Genre;
             existingBook.WhenTake = command.UpdateBook.WhenTake != default ? command.UpdateBook.WhenTake : existingBook.WhenTake;
             existingBook.WhenReturn = command.UpdateBook.WhenReturn != default ? command.UpdateBook.WhenReturn : existingBook.WhenReturn;
+
             _dataContext.Books.Update(existingBook);
             _dataContext.SaveChanges(true);
         }

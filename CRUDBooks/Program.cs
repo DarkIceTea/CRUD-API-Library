@@ -1,20 +1,15 @@
 using CRUDBooks.Models;
 using Microsoft.EntityFrameworkCore;
 using CRUDBooks.Data;
-using CRUDBooks.Controllers;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using CRUDBooks.Properties;
-using Microsoft.AspNetCore.Authorization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using CRUDBooks.Handlers;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 
 namespace CRUDBooks
 {
@@ -62,7 +57,49 @@ namespace CRUDBooks
             builder.Services.AddTransient<ICommandHandler<DeleteBookCommand>, DeleteBookCommandHandler>();
             builder.Services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRUD API Library", Version = "v1" });
+                
+                var basePath = AppContext.BaseDirectory;
+
+                var xmlPath = Path.Combine(basePath, "CRUDBooks.xml");
+                c.IncludeXmlComments(xmlPath);
+
+                // Добавьте конфигурацию Bearer аутентификации
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
+
+                // Добавьте правила безопасности, указывая, что каждый запрос требует токен Bearer
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+            });
+
             var app = builder.Build();
+
+            app.UseDeveloperExceptionPage();
+            //app.UseOpenApi();
+            app.UseSwagger();
+           
+            app.UseSwaggerUI(c => c.SwaggerEndpoint(@"v1/swagger.json", "CRUD API Library"));
 
             app.UseAuthentication();
             app.UseRouting();

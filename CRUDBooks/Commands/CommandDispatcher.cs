@@ -11,11 +11,11 @@
 
         public void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
-            if (command == null) throw new ArgumentNullException(nameof(command));
+            if (command is null) throw new ArgumentNullException(nameof(command));
 
             var handler = _serviceProvider.GetService<ICommandHandler<TCommand>>();
 
-            if (handler == null) throw new Exception(typeof(TCommand).ToString());
+            if (handler is null) throw new Exception(typeof(TCommand).ToString());
 
             handler.Execute(command);
         }

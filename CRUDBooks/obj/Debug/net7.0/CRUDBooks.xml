@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CRUDBooks</name>
+    </assembly>
+    <members>
+        <member name="M:CRUDBooks.Controllers.AccountController.Regestration(CRUDBooks.Models.User)">
+            <summary>
+            Регистрация в системе (добавление нового пользователя)
+            </summary>
+            
+            <remarks>
+            Пример запроса:
+            
+                POST /login
+               {
+                "login": "Someone",
+                "password": "111"
+               }
+            
+            </remarks>
+        </member>
+        <member name="M:CRUDBooks.Controllers.AccountController.LoginAuthentication(CRUDBooks.Models.User)">
+            <summary>
+            Аутентификация в системе
+            </summary>
+            
+            <remarks>
+            Пример запроса:
+            
+                POST /login
+               {
+                "login": "Konstantin",
+                "password": "12345"
+               }
+            
+            </remarks>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.GetAllBooks">
+            <summary>
+            получение всех книг
+            </summary>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.GetBookById(System.Int32)">
+            <summary>
+            получение книги по id.
+            </summary>
+            <param name="id">id книги которую нужно получить</param>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.GetBookByISBN(System.String)">
+            <summary>
+            получение книги по isbn.
+            </summary>
+            <param name="isbn">isbn книги которую нужно получить</param>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.AddBook(CRUDBooks.Models.Book)">
+            <summary>
+            Добавление новой книги.
+            </summary>
+            
+            <remarks>
+            Пример запроса:
+            
+                POST /book
+                {
+                   "id": 1,
+                   "isbn": "1234567890",
+                   "title": "Пример книги",
+                   "author": "Автор",
+                   "genre": "Жанр",
+                   "description": "Описание",
+                   "whenTake": "2023-01-04T12:00:00",
+                   "whenReturn": "2023-01-14T12:00:00"
+                }
+            
+            </remarks>
+            <param name="book">Информация о новой книге.</param>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.EditBook(System.Int32,CRUDBooks.Models.Book)">
+            <summary>
+            редактирование книги.
+            </summary>
+            
+            <remarks>
+            Пример запроса:
+            
+                PUT /book
+                {
+                   "id": 1,
+                   "isbn": "1234567890",
+                   "title": "Пример изменённой книги",
+                   "author": "Автор",
+                   "genre": "Жанр",
+                   "description": "Описание",
+                   "whenTake": "2023-01-04T12:00:00",
+                   "whenReturn": "2023-01-14T12:00:00"
+                }
+            
+            </remarks>
+            <param name="updateBook">Информация о обновлённой книге.</param>
+        </member>
+        <member name="M:CRUDBooks.Controllers.BookController.DeleteBook(System.Int32)">
+            <summary>
+            удаление книги.
+            </summary>
+            <param name="id">id книги которую нужно удалить</param>
+        </member>
+        <member name="T:CRUDBooks.Models.Book">
+            <summary>
+            Represents a book entity.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.Id">
+            <summary>
+            Gets or sets the unique identifier of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.ISBN">
+            <summary>
+            Gets or sets the ISBN (International Standard Book Number) of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.Title">
+            <summary>
+            Gets or sets the title of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.Genre">
+            <summary>
+            Gets or sets the author of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.Description">
+            <summary>
+            Gets or sets the genre of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.Author">
+            <summary>
+            Gets or sets the description of the book.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.WhenTake">
+            <summary>
+            Gets or sets the date when the book was taken.
+            </summary>
+        </member>
+        <member name="P:CRUDBooks.Models.Book.WhenReturn">
+            <summary>
+            Gets or sets the date when the book should be returned.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\swagger.json",
+      "PackagePath": "staticwebassets\\swagger.json"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.CRUDBooks.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.CRUDBooks.props",
+      "PackagePath": "build\\CRUDBooks.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.CRUDBooks.props",
+      "PackagePath": "buildMultiTargeting\\CRUDBooks.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.CRUDBooks.props",
+      "PackagePath": "buildTransitive\\CRUDBooks.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -10,7 +10,7 @@ namespace CRUDBooks.Controllers
 {
     // Добавляем контроллер для работы с книгами
     [ApiController]
-    //[Route("[Controller]")]
+    [Authorize]
     public class BookController : Controller
     {
         private readonly ICommandDispatcher _commandDispatcher;
@@ -25,8 +25,10 @@ namespace CRUDBooks.Controllers
         }
 
         //Получение всех книг
+        /// <summary>
+        /// получение всех книг
+        /// </summary>
         [HttpGet("/books")]
-        //[Authorize]
         public async Task GetAllBooks()
         {
             //var books = await dataContext.Books.ToListAsync();
@@ -37,8 +39,11 @@ namespace CRUDBooks.Controllers
         }
 
         //Получение книги по id
+        /// <summary>
+        /// получение книги по id.
+        /// </summary>
+        /// <param name="id">id книги которую нужно получить</param>
         [HttpGet("/book/{id}")]
-        //[Authorize]
         public async Task GetBookById(int id)
         {
             var query = new GetBookByIdQuery() {BookId = id};
@@ -52,8 +57,11 @@ namespace CRUDBooks.Controllers
         }
 
         //Получение книги по ISBN
+        /// <summary>
+        /// получение книги по isbn.
+        /// </summary>
+        /// <param name="isbn">isbn книги которую нужно получить</param>
         [HttpGet("/book/ISBN/{isbn}")]
-        //[Authorize]
         public async Task GetBookByISBN(string isbn)
         {
             var query = new GetBookByISBNQuery() { ISBN = isbn};
@@ -67,11 +75,35 @@ namespace CRUDBooks.Controllers
         }
 
         //Добавление книги
+        /// <summary>
+        /// Добавление новой книги.
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// Пример запроса:
+        /// 
+        ///     POST /book
+        ///     {
+        ///        "id": 1,
+        ///        "isbn": "1234567890",
+        ///        "title": "Пример книги",
+        ///        "author": "Автор",
+        ///        "genre": "Жанр",
+        ///        "description": "Описание",
+        ///        "whenTake": "2023-01-04T12:00:00",
+        ///        "whenReturn": "2023-01-14T12:00:00"
+        ///     }
+        /// 
+        /// </remarks>
+        /// <param name="book">Информация о новой книге.</param>
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("/book")]
-        //[Authorize]
-        public async Task AddBook()
+        public async Task AddBook([FromBody]Book book)
         {
-            Book book = await httpContext.Request.ReadFromJsonAsync<Book>();
+            //Book book = await httpContext.Request.ReadFromJsonAsync<Book>();
             if (book is null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -82,11 +114,35 @@ namespace CRUDBooks.Controllers
         }
 
         //Редактирование книги
+        /// <summary>
+        /// редактирование книги.
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// Пример запроса:
+        /// 
+        ///     PUT /book
+        ///     {
+        ///        "id": 1,
+        ///        "isbn": "1234567890",
+        ///        "title": "Пример изменённой книги",
+        ///        "author": "Автор",
+        ///        "genre": "Жанр",
+        ///        "description": "Описание",
+        ///        "whenTake": "2023-01-04T12:00:00",
+        ///        "whenReturn": "2023-01-14T12:00:00"
+        ///     }
+        /// 
+        /// </remarks>
+        /// <param name="updateBook">Информация о обновлённой книге.</param>
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("/book/{id}")]
-        //[Authorize]
-        public async Task EditBook(int id)
+        public async Task EditBook(int id, [FromBody] Book updateBook)
         {
-            Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
+            //Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
             if (updateBook is null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -105,8 +161,14 @@ namespace CRUDBooks.Controllers
         }
 
         //Удалениие книги
+        /// <summary>
+        /// удаление книги.
+        /// </summary>
+        /// <param name="id">id книги которую нужно удалить</param>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("/book/{id}")]
-        //[Authorize]
         public async Task DeleteBook(int id)
         {
             try

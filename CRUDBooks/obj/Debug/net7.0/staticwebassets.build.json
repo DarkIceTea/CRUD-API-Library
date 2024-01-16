@@ -1,11 +1,37 @@
 {
   "Version": 1,
-  "Hash": "LtZuhdNcLG6NoWKK5qqB1MxzHoVkmF19CTXmNKnEcus=",
+  "Hash": "YPfoUpPiDjRJDDSJU+uP7oRXanl5QMyo1nqglUGYg2w=",
   "Source": "CRUDBooks",
   "BasePath": "_content/CRUDBooks",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "CRUDBooks\\wwwroot",
+      "Source": "CRUDBooks",
+      "ContentRoot": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\",
+      "BasePath": "_content/CRUDBooks",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\swagger.json",
+      "SourceId": "CRUDBooks",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\",
+      "BasePath": "_content/CRUDBooks",
+      "RelativePath": "swagger.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\swagger.json"
+    }
+  ]
 }

@@ -23,10 +23,25 @@ namespace CRUDBooks.Controllers
             this.httpContext = httpContext.HttpContext;
             this.dataContext = dataContext;
         }
-        [HttpGet("/registration")]
-        public async Task Regestration()
+
+        /// <summary>
+        /// Регистрация в системе (добавление нового пользователя)
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// Пример запроса:
+        /// 
+        ///     POST /login
+        ///    {
+        ///     "login": "Someone",
+        ///     "password": "111"
+        ///    }
+        /// 
+        /// </remarks>
+        [HttpPost("/registration")]
+        public async Task Regestration([FromBody]User user)
         {
-            User user = await httpContext.Request.ReadFromJsonAsync<User>();
+            //User user = await httpContext.Request.ReadFromJsonAsync<User>();
             if (user == null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;  //Не удалось десериализовать объект User
@@ -37,17 +52,32 @@ namespace CRUDBooks.Controllers
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;  //Пользователь уже существует
                 return;
             }
+            user.Id = 0;
             user.Password = HashPassword(user.Password);
             dataContext.Add(user);
             dataContext.SaveChanges();
         }
 
-        [HttpGet("/login")]
-        public async Task LoginAuthentication()
+        /// <summary>
+        /// Аутентификация в системе
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// Пример запроса:
+        /// 
+        ///     POST /login
+        ///    {
+        ///     "login": "Konstantin",
+        ///     "password": "12345"
+        ///    }
+        /// 
+        /// </remarks>
+        [HttpPost("/login")]
+        public async Task LoginAuthentication([FromBody]User userFromClient)
         {
             //User userFromClient = new User() { Id = 1, Login = "Konstantin", Password = "12345" };
 
-            User userFromClient = await httpContext.Request.ReadFromJsonAsync<User>();
+            //User userFromClient = await httpContext.Request.ReadFromJsonAsync<User>();
             User userFromDb = dataContext.Users.FirstOrDefault(u =>  u.Login == userFromClient.Login);
             if (userFromDb == null)
             {
@@ -92,7 +122,7 @@ namespace CRUDBooks.Controllers
                 salt: new byte[0], // Пустая соль
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 10000,
-                numBytesRequested: 256 / 8); 
+                numBytesRequested: 256 / 8);
 
             // Сравнение хешей
             return actualHash.SequenceEqual(Convert.FromBase64String(hashedPassword));
