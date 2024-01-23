@@ -18,17 +18,9 @@
         /// </summary>
         public string Title { get; set; }
         /// <summary>
-        /// Gets or sets the author of the book.
-        /// </summary>
-        public string Genre { get; set; }
-        /// <summary>
-        /// Gets or sets the genre of the book.
-        /// </summary>
-        public string Description { get; set; }
-        /// <summary>
         /// Gets or sets the description of the book.
         /// </summary>
-        public string Author { get; set; }
+        public string Description { get; set; }
         /// <summary>
         /// Gets or sets the date when the book was taken.
         /// </summary>
@@ -37,5 +29,11 @@
         /// Gets or sets the date when the book should be returned.
         /// </summary>
         public DateTime WhenReturn { get; set; }
+
+        public int AuthorId { get; set; }
+        public Author Author { get; set; }
+
+        public int GenreId { get; set; }
+        public Genre Genre { get; set; }
     }
 }
