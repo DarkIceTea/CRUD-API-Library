@@ -10,7 +10,7 @@ namespace CRUDBooks.Controllers
 {
     // Добавляем контроллер для работы с книгами
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class BookController : Controller
     {
         private readonly ICommandDispatcher _commandDispatcher;
@@ -35,6 +35,7 @@ namespace CRUDBooks.Controllers
             //await httpContext.Response.WriteAsJsonAsync(books);
             var query = new GetAllBooksQuery();
             var books = _queryDispatcher.Execute<GetAllBooksQuery, List<Book>>(query);
+
             await httpContext.Response.WriteAsJsonAsync(books);
         }
 

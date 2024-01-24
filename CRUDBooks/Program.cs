@@ -8,8 +8,6 @@ using CRUDBooks.Handlers;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 
 namespace CRUDBooks
 {
@@ -60,7 +58,7 @@ namespace CRUDBooks
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRUD API Library", Version = "v1" });
-                
+
                 var basePath = AppContext.BaseDirectory;
 
                 var xmlPath = Path.Combine(basePath, "CRUDBooks.xml");
@@ -76,21 +74,19 @@ namespace CRUDBooks
                     In = ParameterLocation.Header
                 });
 
-                // Добавьте правила безопасности, указывая, что каждый запрос требует токен Bearer
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] { }
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        }, new string[] { }
+                    }
+                });
             });
 
             var app = builder.Build();
@@ -98,23 +94,13 @@ namespace CRUDBooks
             app.UseDeveloperExceptionPage();
             //app.UseOpenApi();
             app.UseSwagger();
-           
+
             app.UseSwaggerUI(c => c.SwaggerEndpoint(@"v1/swagger.json", "CRUD API Library"));
 
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-            
-
-            //app.MapGet("/books", BookController.GetAllBooks); // Обработка запроса на получение всех книг
-            //app.MapGet("book/{id}", BookController.GetBookById); // Обработка запроса на получение книги по Id
-            //app.MapGet("book/ISBN/{isbn}", BookController.GetBookByISBN); // Обработка запроса на получение книги по ISBN
-            //app.MapPost("book/add", BookController.AddBook); // Обработка запроса на создание новой книги
-            //app.MapPut("book/{id}", BookController.EditBook); // Обработка запроса на обновление книги по Id
-            //app.MapDelete("book/{id}", BookController.DeleteBook); // Обработка запроса на удаление книги по Id
-            //app.MapPost("/login", AccountController.LoginAuthentication);
-            //app.MapPost("/registration", AccountController.Regestration);
 
             app.Run();
         }

@@ -7,19 +7,13 @@ namespace CRUDBooks.Data
     {
         public DbSet<Book> Books { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Author> Authors { get; set; } = null!;
+        public DbSet<Genre> Genres { get; set; } = null!;
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Book>().HasData(
-                    new Book { Id = 1, Title = "Crime and panishment", Author = "Dostoevsky", Description = "about roskolnikov", Genre = "Drama", ISBN = "978-5-93673-265-2", WhenTake = DateTime.Now, WhenReturn = DateTime.Now.AddMonths(1) },
-                    new Book { Id = 2, Title = "Dead Souls", Author = "Gogol", Description = "about Chichikov", Genre = "Satire", ISBN = "978-5-93673-435-2", WhenTake = DateTime.Now, WhenReturn = DateTime.Now.AddMonths(1) }
-                    );
-            modelBuilder.Entity<User>().HasData(new User { Id = 1, Login = "Konstantin", Password = "Ldzk4Uai7Y8LKtylgV7nlqBrBZ2R/KPh+/W/8QKnYlU=" });  //Пароль 12345         
+            SeedData.Initialize(this);
         }
     }
 }

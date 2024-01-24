@@ -125,17 +125,7 @@
             Gets or sets the title of the book.
             </summary>
         </member>
-        <member name="P:CRUDBooks.Models.Book.Genre">
-            <summary>
-            Gets or sets the author of the book.
-            </summary>
-        </member>
         <member name="P:CRUDBooks.Models.Book.Description">
-            <summary>
-            Gets or sets the genre of the book.
-            </summary>
-        </member>
-        <member name="P:CRUDBooks.Models.Book.Author">
             <summary>
             Gets or sets the description of the book.
             </summary>
