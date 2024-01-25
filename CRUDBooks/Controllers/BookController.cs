@@ -27,12 +27,12 @@ namespace CRUDBooks.Controllers
         /// получение всех книг
         /// </summary>
         [HttpGet("/books")]
-        public async Task GetAllBooks()
+        public async Task<IActionResult> GetAllBooks()
         {
             var query = new GetAllBooksQuery();
             List<Book> books = await mediator.Send(query);
 
-            await httpContext.Response.WriteAsJsonAsync(books);
+            return Json(books);
         }
 
         /// <summary>
@@ -40,16 +40,15 @@ namespace CRUDBooks.Controllers
         /// </summary>
         /// <param name="id">id книги которую нужно получить</param>
         [HttpGet("/book/{id}")]
-        public async Task GetBookById(int id)
+        public async Task<IActionResult> GetBookById(int id)
         {
             var query = new GetBookByIdQuery() {BookId = id};
             Book book = await mediator.Send(query);
             if (book is null)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
+                return NotFound();
             }
-            await httpContext.Response.WriteAsJsonAsync(book);
+            return Json(book);
         }
 
         /// <summary>
@@ -57,16 +56,15 @@ namespace CRUDBooks.Controllers
         /// </summary>
         /// <param name="isbn">isbn книги которую нужно получить</param>
         [HttpGet("/book/ISBN/{isbn}")]
-        public async Task GetBookByISBN(string isbn)
+        public async Task<IActionResult> GetBookByISBN(string isbn)
         {
             var query = new GetBookByISBNQuery() { ISBN = isbn};
             var book = await mediator.Send(query);
             if (book is null)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
+                return NotFound();
             }
-            await httpContext.Response.WriteAsJsonAsync(book);
+            return Json(book);
         }
 
         /// <summary>
@@ -95,16 +93,17 @@ namespace CRUDBooks.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("/book")]
-        public async Task AddBook([FromBody]Book book)
+        public async Task<IActionResult> AddBook([FromBody]Book book)
         {
             //Book book = await httpContext.Request.ReadFromJsonAsync<Book>();
             if (book is null)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                return;
+                return NotFound();
             }
             var command = new AddBookCommand { Book = book };
             mediator.Send(command);
+            
+            return Ok();
         }
 
         /// <summary>
@@ -131,25 +130,24 @@ namespace CRUDBooks.Controllers
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("/book/{id}")]
-        public async Task EditBook(int id, [FromBody] Book updateBook)
+        public async Task<IActionResult> EditBook(int id, [FromBody] Book updateBook)
         {
             //Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
             if (updateBook is null)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                return;
+                return BadRequest();
             }
 
             try
             {
                 var command = new EditBookCommand { Id = id, UpdateBook = updateBook };
                 mediator.Send(command);
+                return Ok();
             }
             catch (Exception ex)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                return NotFound(ex.Message);
             }
         }
 
@@ -161,16 +159,17 @@ namespace CRUDBooks.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("/book/{id}")]
-        public async Task DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
             try
             {
                 var command = new DeleteBookCommand { Id = id };
                 mediator.Send(command);
+                return Ok();
             }
             catch (Exception ex)
             {
-                httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                return NotFound(ex.Message);
             }
         }
     }
