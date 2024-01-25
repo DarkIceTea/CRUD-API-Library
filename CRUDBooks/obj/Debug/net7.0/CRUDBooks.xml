@@ -4,7 +4,7 @@
         <name>CRUDBooks</name>
     </assembly>
     <members>
-        <member name="M:CRUDBooks.Controllers.AccountController.Regestration(CRUDBooks.Models.User)">
+        <member name="M:CRUDBooks.Controllers.AccountController.Registration(CRUDBooks.Models.User)">
             <summary>
             Регистрация в системе (добавление нового пользователя)
             </summary>

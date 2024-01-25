@@ -24,7 +24,6 @@ namespace CRUDBooks.Controllers
             _commandDispatcher = commandDispatcher;
         }
 
-        //Получение всех книг
         /// <summary>
         /// получение всех книг
         /// </summary>
@@ -39,7 +38,6 @@ namespace CRUDBooks.Controllers
             await httpContext.Response.WriteAsJsonAsync(books);
         }
 
-        //Получение книги по id
         /// <summary>
         /// получение книги по id.
         /// </summary>
@@ -57,7 +55,6 @@ namespace CRUDBooks.Controllers
             await httpContext.Response.WriteAsJsonAsync(book);
         }
 
-        //Получение книги по ISBN
         /// <summary>
         /// получение книги по isbn.
         /// </summary>
@@ -75,7 +72,6 @@ namespace CRUDBooks.Controllers
             await httpContext.Response.WriteAsJsonAsync(book);
         }
 
-        //Добавление книги
         /// <summary>
         /// Добавление новой книги.
         /// </summary>
@@ -114,7 +110,6 @@ namespace CRUDBooks.Controllers
             _commandDispatcher.Execute(command);
         }
 
-        //Редактирование книги
         /// <summary>
         /// редактирование книги.
         /// </summary>
@@ -161,7 +156,6 @@ namespace CRUDBooks.Controllers
             }
         }
 
-        //Удалениие книги
         /// <summary>
         /// удаление книги.
         /// </summary>

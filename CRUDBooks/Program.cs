@@ -8,6 +8,7 @@ using CRUDBooks.Handlers;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
 using Microsoft.OpenApi.Models;
+using CRUDBooks.Services;
 
 namespace CRUDBooks
 {
@@ -55,6 +56,10 @@ namespace CRUDBooks
             builder.Services.AddTransient<ICommandHandler<DeleteBookCommand>, DeleteBookCommandHandler>();
             builder.Services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 
+            builder.Services.AddTransient<IRegistrationService, RegistrationService>();
+            builder.Services.AddTransient<IAuthService, AuthService>();
+            builder.Services.AddTransient<ITokenService, TokenService>();
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRUD API Library", Version = "v1" });
@@ -92,7 +97,6 @@ namespace CRUDBooks
             var app = builder.Build();
 
             app.UseDeveloperExceptionPage();
-            //app.UseOpenApi();
             app.UseSwagger();
 
             app.UseSwaggerUI(c => c.SwaggerEndpoint(@"v1/swagger.json", "CRUD API Library"));
