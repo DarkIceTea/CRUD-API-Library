@@ -2,10 +2,12 @@
 using CRUDBooks.Data;
 using Mapster;
 using CRUDBooks.Models;
+using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRUDBooks.Handlers
 {
-    public class AddBookCommandHandler : ICommandHandler<AddBookCommand>
+    public class AddBookCommandHandler : IRequestHandler<AddBookCommand>
     {
         private readonly DataContext _dataContext;
 
@@ -14,12 +16,12 @@ namespace CRUDBooks.Handlers
             _dataContext = dataContext;
         }
 
-        public void Execute(AddBookCommand command)
+        async Task IRequestHandler<AddBookCommand>.Handle(AddBookCommand request, CancellationToken cancellationToken)
         {
-            Book book = command.Book.Adapt<Book>();
+            Book book = request.Book.Adapt<Book>();
             book.Id = 0; //Id назначается сам
-            _dataContext.Books.Add(command.Book);
-            _dataContext.SaveChanges(true);
+            _dataContext.Books.Add(request.Book);
+            await _dataContext.SaveChangesAsync(true, cancellationToken);
         }
     }
 }

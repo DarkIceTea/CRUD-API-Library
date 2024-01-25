@@ -1,14 +1,16 @@
-using CRUDBooks.Models;
 using Microsoft.EntityFrameworkCore;
 using CRUDBooks.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using CRUDBooks.Properties;
-using CRUDBooks.Handlers;
-using CRUDBooks.Queries;
-using CRUDBooks.Commands;
 using Microsoft.OpenApi.Models;
 using CRUDBooks.Services;
+using System.Reflection;
+using MediatR;
+using CRUDBooks.Commands;
+using CRUDBooks.Handlers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CRUDBooks
 {
@@ -44,17 +46,7 @@ namespace CRUDBooks
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
 
-            //Регистрация обработчиков запросов
-            builder.Services.AddTransient<IQueryHandler<GetAllBooksQuery, List<Book>>, GetAllBooksQueryHandler>();
-            builder.Services.AddTransient<IQueryHandler<GetBookByIdQuery, Book>, GetBookByIdQueryHandler>();
-            builder.Services.AddTransient<IQueryHandler<GetBookByISBNQuery, Book>, GetBookByISBNQueryHandler>();
-            builder.Services.AddSingleton<IQueryDispatcher, QueryDispatcher>();
-
-            // Регистрация обработчиков команд
-            builder.Services.AddTransient<ICommandHandler<AddBookCommand>, AddBookCommandHandler>();
-            builder.Services.AddTransient<ICommandHandler<EditBookCommand>, EditBookCommandHandler>();
-            builder.Services.AddTransient<ICommandHandler<DeleteBookCommand>, DeleteBookCommandHandler>();
-            builder.Services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
             builder.Services.AddTransient<IRegistrationService, RegistrationService>();
             builder.Services.AddTransient<IAuthService, AuthService>();

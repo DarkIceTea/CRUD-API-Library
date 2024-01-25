@@ -1,10 +1,13 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using CRUDBooks.Queries;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CRUDBooks.Handlers
 {
-    public class GetBookByISBNQueryHandler : IQueryHandler<GetBookByISBNQuery, Book>
+    public class GetBookByISBNQueryHandler : IRequestHandler<GetBookByISBNQuery, Book>
     {
         private readonly DataContext _dataContext;
 
@@ -13,9 +16,9 @@ namespace CRUDBooks.Handlers
             _dataContext = dataContext;
         }
 
-        public Book Execute(GetBookByISBNQuery query)
+        async Task<Book> IRequestHandler<GetBookByISBNQuery, Book>.Handle(GetBookByISBNQuery request, CancellationToken cancellationToken)
         {
-            return _dataContext.Books.FirstOrDefault(b => b.ISBN == query.ISBN);
+            return await _dataContext.Books.FirstOrDefaultAsync(b => b.ISBN == request.ISBN);
         }
     }
 }

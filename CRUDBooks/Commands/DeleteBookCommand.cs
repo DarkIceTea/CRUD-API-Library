@@ -1,6 +1,8 @@
-﻿namespace CRUDBooks.Commands
+﻿using MediatR;
+
+namespace CRUDBooks.Commands
 {
-    public class DeleteBookCommand : ICommand
+    public class DeleteBookCommand : IRequest
     {
         public int Id { get; set; }
     }

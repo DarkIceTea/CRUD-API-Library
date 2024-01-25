@@ -87,3 +87,6 @@ D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\YamlDotNet.dll
 D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\CRUDBooks.staticwebassets.runtime.json
 D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\CRUDBooks.xml
 D:\HereCode\Work\CRUDBooks\CRUDBooks\obj\Debug\net7.0\CRUDBooks.xml
+D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\MediatR.dll
+D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\MediatR.Contracts.dll
+D:\HereCode\Work\CRUDBooks\CRUDBooks\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll

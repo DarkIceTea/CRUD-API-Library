@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
+using MediatR;
 
 namespace CRUDBooks.Controllers
 {
@@ -13,15 +14,13 @@ namespace CRUDBooks.Controllers
     //[Authorize]
     public class BookController : Controller
     {
-        private readonly ICommandDispatcher _commandDispatcher;
-        private readonly IQueryDispatcher _queryDispatcher;
+        private readonly IMediator mediator;
         private readonly HttpContext httpContext;
 
-        public BookController(IHttpContextAccessor accessor, IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
+        public BookController(IHttpContextAccessor accessor, IMediator mediator)
         {
             httpContext = accessor.HttpContext;
-            _queryDispatcher = queryDispatcher;
-            _commandDispatcher = commandDispatcher;
+            this.mediator = mediator;
         }
 
         /// <summary>
@@ -30,10 +29,8 @@ namespace CRUDBooks.Controllers
         [HttpGet("/books")]
         public async Task GetAllBooks()
         {
-            //var books = await dataContext.Books.ToListAsync();
-            //await httpContext.Response.WriteAsJsonAsync(books);
             var query = new GetAllBooksQuery();
-            var books = _queryDispatcher.Execute<GetAllBooksQuery, List<Book>>(query);
+            List<Book> books = await mediator.Send(query);
 
             await httpContext.Response.WriteAsJsonAsync(books);
         }
@@ -46,7 +43,7 @@ namespace CRUDBooks.Controllers
         public async Task GetBookById(int id)
         {
             var query = new GetBookByIdQuery() {BookId = id};
-            Book book = _queryDispatcher.Execute<GetBookByIdQuery, Book>(query);
+            Book book = await mediator.Send(query);
             if (book is null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -63,7 +60,7 @@ namespace CRUDBooks.Controllers
         public async Task GetBookByISBN(string isbn)
         {
             var query = new GetBookByISBNQuery() { ISBN = isbn};
-            var book = _queryDispatcher.Execute<GetBookByISBNQuery, Book>(query);
+            var book = await mediator.Send(query);
             if (book is null)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -107,7 +104,7 @@ namespace CRUDBooks.Controllers
                 return;
             }
             var command = new AddBookCommand { Book = book };
-            _commandDispatcher.Execute(command);
+            mediator.Send(command);
         }
 
         /// <summary>
@@ -148,7 +145,7 @@ namespace CRUDBooks.Controllers
             try
             {
                 var command = new EditBookCommand { Id = id, UpdateBook = updateBook };
-                _commandDispatcher.Execute(command);
+                mediator.Send(command);
             }
             catch (Exception ex)
             {
@@ -169,7 +166,7 @@ namespace CRUDBooks.Controllers
             try
             {
                 var command = new DeleteBookCommand { Id = id };
-                _commandDispatcher.Execute(command);
+                mediator.Send(command);
             }
             catch (Exception ex)
             {

@@ -1,8 +1,9 @@
 ﻿using CRUDBooks.Models;
+using MediatR;
 
 namespace CRUDBooks.Commands
 {
-    public class AddBookCommand : ICommand
+    public class AddBookCommand : IRequest
     {
         public Book Book { get; set; }
     }

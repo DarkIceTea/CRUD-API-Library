@@ -1,10 +1,12 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using CRUDBooks.Queries;
+using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CRUDBooks.Handlers
 {
-    public class GetBookByIdQueryHandler : IQueryHandler<GetBookByIdQuery, Book>
+    public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery,  Book>
     {
         private readonly DataContext _dataContext;
 
@@ -13,9 +15,9 @@ namespace CRUDBooks.Handlers
             _dataContext = dataContext;
         }
 
-        public Book Execute(GetBookByIdQuery query)
+        async Task<Book> IRequestHandler<GetBookByIdQuery, Book>.Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
-            return _dataContext.Books.Find(query.BookId);
+            return await _dataContext.Books.FindAsync(request.BookId,cancellationToken);
         }
     }
 
