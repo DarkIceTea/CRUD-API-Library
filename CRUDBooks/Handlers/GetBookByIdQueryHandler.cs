@@ -1,23 +1,22 @@
-﻿using CRUDBooks.Data;
-using CRUDBooks.Models;
+﻿using CRUDBooks.Models;
 using CRUDBooks.Queries;
+using CRUDBooks.Repositiries;
 using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CRUDBooks.Handlers
 {
     public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery,  Book>
     {
-        private readonly DataContext _dataContext;
+        private readonly IBookQueryRepository bookQueryRepository;
 
-        public GetBookByIdQueryHandler(DataContext dataContext)
+        public GetBookByIdQueryHandler(IBookQueryRepository bookQueryRepository)
         {
-            _dataContext = dataContext;
+            this.bookQueryRepository = bookQueryRepository;
         }
 
         async Task<Book> IRequestHandler<GetBookByIdQuery, Book>.Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _dataContext.Books.FindAsync(request.BookId,cancellationToken);
+            return await bookQueryRepository.GetBookByIdAsync(request.BookId, cancellationToken);
         }
     }
 

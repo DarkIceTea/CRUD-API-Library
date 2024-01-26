@@ -5,12 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using CRUDBooks.Properties;
 using Microsoft.OpenApi.Models;
 using CRUDBooks.Services;
-using System.Reflection;
-using MediatR;
-using CRUDBooks.Commands;
-using CRUDBooks.Handlers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
+using CRUDBooks.Repositiries;
 
 namespace CRUDBooks
 {
@@ -47,6 +42,8 @@ namespace CRUDBooks
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+            builder.Services.AddTransient<IBookCommandRepository, BookRepository>();
+            builder.Services.AddTransient<IBookQueryRepository, BookRepository>();
 
             builder.Services.AddTransient<IRegistrationService, RegistrationService>();
             builder.Services.AddTransient<IAuthService, AuthService>();

@@ -1,27 +1,21 @@
 ﻿using CRUDBooks.Commands;
-using CRUDBooks.Data;
-using Mapster;
-using CRUDBooks.Models;
 using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using CRUDBooks.Repositiries;
 
 namespace CRUDBooks.Handlers
 {
     public class AddBookCommandHandler : IRequestHandler<AddBookCommand>
     {
-        private readonly DataContext _dataContext;
+        private readonly IBookCommandRepository bookCommandRepository;
 
-        public AddBookCommandHandler(DataContext dataContext)
+        public AddBookCommandHandler(IBookCommandRepository bookCommandRepository)
         {
-            _dataContext = dataContext;
+            this.bookCommandRepository = bookCommandRepository;
         }
 
         async Task IRequestHandler<AddBookCommand>.Handle(AddBookCommand request, CancellationToken cancellationToken)
         {
-            Book book = request.Book.Adapt<Book>();
-            book.Id = 0; //Id назначается сам
-            _dataContext.Books.Add(request.Book);
-            await _dataContext.SaveChangesAsync(true, cancellationToken);
+            await bookCommandRepository.AddBookAsync(request.Book, cancellationToken);
         }
     }
 }
