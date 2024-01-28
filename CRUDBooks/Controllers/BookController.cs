@@ -11,7 +11,7 @@ namespace CRUDBooks.Controllers
 {
     // Добавляем контроллер для работы с книгами
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BookController : Controller
     {
         private readonly IMediator mediator;

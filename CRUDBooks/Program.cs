@@ -6,6 +6,7 @@ using CRUDBooks.Properties;
 using Microsoft.OpenApi.Models;
 using CRUDBooks.Services;
 using CRUDBooks.Repositiries;
+using CRUDBooks.Extensions;
 
 namespace CRUDBooks
 {
@@ -17,26 +18,9 @@ namespace CRUDBooks
             // получаем строку подключения из файла конфигурации
             string connection = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddAuthorization();
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    // указывает, будет ли валидироваться издатель при валидации токена
-                    ValidateIssuer = true,
-                    // строка, представляющая издателя
-                    ValidIssuer = AuthOptions.ISSUER,
-                    // будет ли валидироваться потребитель токена
-                    ValidateAudience = true,
-                    // установка потребителя токена
-                    ValidAudience = AuthOptions.AUDIENCE,
-                    // будет ли валидироваться время существования
-                    ValidateLifetime = true,
-                    // установка ключа безопасности
-                    IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                    // валидация ключа безопасности
-                    ValidateIssuerSigningKey = true,
-                };
-            });    // подключение аутентификации с помощью jwt-токенов
+
+            builder.Services.AddCustomAuthentication();
+            
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);    // добавляем контекст ApplicationContext в качестве сервиса в приложение
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
@@ -49,39 +33,7 @@ namespace CRUDBooks
             builder.Services.AddTransient<IAuthService, AuthService>();
             builder.Services.AddTransient<ITokenService, TokenService>();
 
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRUD API Library", Version = "v1" });
-
-                var basePath = AppContext.BaseDirectory;
-
-                var xmlPath = Path.Combine(basePath, "CRUDBooks.xml");
-                c.IncludeXmlComments(xmlPath);
-
-                // Добавьте конфигурацию Bearer аутентификации
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme.",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        }, new string[] { }
-                    }
-                });
-            });
+            builder.Services.AddCustomSwagger();
 
             var app = builder.Build();
 

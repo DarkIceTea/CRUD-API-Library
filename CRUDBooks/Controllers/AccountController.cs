@@ -8,16 +8,12 @@ namespace CRUDBooks.Controllers
     [ApiController]
     public class AccountController : Controller
     {
-        private readonly HttpContext httpContext;
-        private readonly DataContext dataContext;
         private readonly ITokenService tokenService;
         private readonly IAuthService authService;
         private readonly IRegistrationService registrationService;
 
-        public AccountController(IHttpContextAccessor httpContext, DataContext dataContext, ITokenService tokenService, IAuthService authService, IRegistrationService registrationService)
+        public AccountController(ITokenService tokenService, IAuthService authService, IRegistrationService registrationService)
         {
-            this.httpContext = httpContext.HttpContext;
-            this.dataContext = dataContext;
             this.tokenService = tokenService;
             this.authService = authService;
             this.registrationService = registrationService;
