@@ -1,9 +1,6 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using Microsoft.EntityFrameworkCore;
-using Mapster;
-using Azure.Core;
-using System.Threading;
 
 namespace CRUDBooks.Repositiries
 {
@@ -48,16 +45,21 @@ namespace CRUDBooks.Repositiries
 
         public async Task AddBookAsync(Book book, CancellationToken cancellationToken)
         {
-            book = book.Adapt<Book>();
-
-            book.Id = 0; //Id назначается сам
             dataContext.Books.Add(book);
             await dataContext.SaveChangesAsync(true, cancellationToken);
         }
 
-        public async Task EditBookAsync(Book book, CancellationToken cancellationToken)
+        public async Task EditBookAsync(Book book, int id, CancellationToken cancellationToken)
         {
-            dataContext.Books.Update(book);
+            Book existingBook = dataContext.Books.Find(id);
+            if (existingBook is null) throw new Exception();
+
+            existingBook.Author = book.Author;
+            existingBook.Genre = book.Genre;
+            existingBook.ISBN = book.ISBN;
+            existingBook.Title = book.Title;
+            existingBook.Description = book.Description;
+
             await dataContext.SaveChangesAsync(true, cancellationToken);
         }
 

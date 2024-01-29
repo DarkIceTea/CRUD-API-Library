@@ -6,6 +6,8 @@ using CRUDBooks.Commands;
 using MediatR;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using CRUDBooks.Dto;
+using Mapster;
 
 namespace CRUDBooks.Controllers
 {
@@ -20,6 +22,15 @@ namespace CRUDBooks.Controllers
         public BookController(IMediator mediator)
         {
             this.mediator = mediator;
+
+            TypeAdapterConfig<BookDto, Book>.NewConfig()
+                .Map(dest => dest.Author, src => new Author { FirstName = src.AuthorName, LastName = src.AutorLastName})
+                .Map(dest => dest.Genre, src => new Genre { Name = src.Genre });
+
+            TypeAdapterConfig<Book, BookDto>.NewConfig()
+                .Map(dest => dest.AuthorName, src => src.Author.FirstName)
+                .Map(dest => dest.AutorLastName, src => src.Author.LastName)
+                .Map(dest => dest.Genre, src => src.Genre.Name);
         }
 
         /// <summary>
@@ -31,12 +42,8 @@ namespace CRUDBooks.Controllers
             var query = new GetAllBooksQuery();
             List<Book> books = await mediator.Send(query);
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-            };
-
-            return Json(books, options);
+            List<BookDto> booksDto = books.Adapt<List<BookDto>>();
+            return Json(booksDto);
         }
 
         /// <summary>
@@ -53,12 +60,8 @@ namespace CRUDBooks.Controllers
                 return NotFound();
             }
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-            };
-
-            return Json(book, options);
+            BookDto bookDto = book.Adapt<BookDto>();
+            return Json(bookDto);
         }
 
         /// <summary>
@@ -75,12 +78,8 @@ namespace CRUDBooks.Controllers
                 return NotFound();
             }
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-            };
-
-            return Json(book, options);
+            BookDto bookDto = book.Adapt<BookDto>();
+            return Json(bookDto);
         }
 
         /// <summary>
@@ -92,14 +91,14 @@ namespace CRUDBooks.Controllers
         /// 
         ///     POST /book
         ///     {
-        ///        "id": 1,
-        ///        "isbn": "1234567890",
-        ///        "title": "Пример книги",
-        ///        "author": "Автор",
-        ///        "genre": "Жанр",
-        ///        "description": "Описание",
-        ///        "whenTake": "2023-01-04T12:00:00",
-        ///        "whenReturn": "2023-01-14T12:00:00"
+        ///         {
+        ///         "title": "Dead Souls",
+        ///         "isbn": "978-5-93673-435-2",
+        ///         "description": "about Chichikov",
+        ///         "authorName": "Nikolay",
+        ///         "autorLastName": "Gogol",
+        ///         "genre": "Satire"
+        ///         }
         ///     }
         /// 
         /// </remarks>
@@ -107,17 +106,18 @@ namespace CRUDBooks.Controllers
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("/book")]
-        public async Task<IActionResult> AddBook([FromBody]Book book)
+        public async Task<IActionResult> AddBook([FromBody]BookDto bookDto)
         {
-            //Book book = await httpContext.Request.ReadFromJsonAsync<Book>();
-            if (book is null)
+            if (bookDto is null)
             {
-                return NotFound();
+                return BadRequest();
             }
+
+            Book book = bookDto.Adapt<Book>();
+
             var command = new AddBookCommand { Book = book };
-            mediator.Send(command);
+            await mediator.Send(command);
             
             return Ok();
         }
@@ -131,14 +131,14 @@ namespace CRUDBooks.Controllers
         /// 
         ///     PUT /book
         ///     {
-        ///        "id": 1,
-        ///        "isbn": "1234567890",
-        ///        "title": "Пример изменённой книги",
-        ///        "author": "Автор",
-        ///        "genre": "Жанр",
-        ///        "description": "Описание",
-        ///        "whenTake": "2023-01-04T12:00:00",
-        ///        "whenReturn": "2023-01-14T12:00:00"
+        ///        {
+        ///         "title": "Dead Souls",
+        ///         "isbn": "978-5-93673-435-2",
+        ///         "description": "about Chichikov",
+        ///         "authorName": "Nikolay",
+        ///         "autorLastName": "Gogol",
+        ///         "genre": "Satire"
+        ///         }
         ///     }
         /// 
         /// </remarks>
@@ -147,18 +147,19 @@ namespace CRUDBooks.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("/book/{id}")]
-        public async Task<IActionResult> EditBook(int id, [FromBody] Book updateBook)
+        public async Task<IActionResult> EditBook(int id, [FromBody] BookDto updateBookDto)
         {
-            //Book updateBook = await httpContext.Request.ReadFromJsonAsync<Book>();
-            if (updateBook is null)
+            if (updateBookDto is null)
             {
                 return BadRequest();
             }
 
+            Book updateBook = updateBookDto.Adapt<Book>();
+
             try
             {
                 var command = new EditBookCommand { Id = id, UpdateBook = updateBook };
-                mediator.Send(command);
+                await mediator.Send(command);
                 return Ok();
             }
             catch (Exception ex)
@@ -173,14 +174,13 @@ namespace CRUDBooks.Controllers
         /// <param name="id">id книги которую нужно удалить</param>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("/book/{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
             try
             {
                 var command = new DeleteBookCommand { Id = id };
-                mediator.Send(command);
+                await mediator.Send(command);
                 return Ok();
             }
             catch (Exception ex)

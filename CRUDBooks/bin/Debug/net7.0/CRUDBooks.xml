@@ -53,7 +53,7 @@
             </summary>
             <param name="isbn">isbn книги которую нужно получить</param>
         </member>
-        <member name="M:CRUDBooks.Controllers.BookController.AddBook(CRUDBooks.Models.Book)">
+        <member name="M:CRUDBooks.Controllers.BookController.AddBook(CRUDBooks.Dto.BookDto)">
             <summary>
             Добавление новой книги.
             </summary>
@@ -63,20 +63,17 @@
             
                 POST /book
                 {
-                   "id": 1,
                    "isbn": "1234567890",
                    "title": "Пример книги",
                    "author": "Автор",
                    "genre": "Жанр",
                    "description": "Описание",
-                   "whenTake": "2023-01-04T12:00:00",
-                   "whenReturn": "2023-01-14T12:00:00"
                 }
             
             </remarks>
             <param name="book">Информация о новой книге.</param>
         </member>
-        <member name="M:CRUDBooks.Controllers.BookController.EditBook(System.Int32,CRUDBooks.Models.Book)">
+        <member name="M:CRUDBooks.Controllers.BookController.EditBook(System.Int32,CRUDBooks.Dto.BookDto)">
             <summary>
             редактирование книги.
             </summary>
