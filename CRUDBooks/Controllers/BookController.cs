@@ -1,11 +1,11 @@
-﻿using CRUDBooks.Data;
-using CRUDBooks.Models;
+﻿using CRUDBooks.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
 using MediatR;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace CRUDBooks.Controllers
 {
@@ -15,11 +15,10 @@ namespace CRUDBooks.Controllers
     public class BookController : Controller
     {
         private readonly IMediator mediator;
-        private readonly HttpContext httpContext;
+        
 
-        public BookController(IHttpContextAccessor accessor, IMediator mediator)
+        public BookController(IMediator mediator)
         {
-            httpContext = accessor.HttpContext;
             this.mediator = mediator;
         }
 
@@ -32,7 +31,12 @@ namespace CRUDBooks.Controllers
             var query = new GetAllBooksQuery();
             List<Book> books = await mediator.Send(query);
 
-            return Json(books);
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+            };
+
+            return Json(books, options);
         }
 
         /// <summary>
@@ -48,7 +52,13 @@ namespace CRUDBooks.Controllers
             {
                 return NotFound();
             }
-            return Json(book);
+
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+            };
+
+            return Json(book, options);
         }
 
         /// <summary>
@@ -64,7 +74,13 @@ namespace CRUDBooks.Controllers
             {
                 return NotFound();
             }
-            return Json(book);
+
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+            };
+
+            return Json(book, options);
         }
 
         /// <summary>

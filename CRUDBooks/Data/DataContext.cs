@@ -11,9 +11,7 @@ namespace CRUDBooks.Data
         public DbSet<Genre> Genres { get; set; } = null!;
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
             Database.EnsureCreated();
-            SeedData.Initialize(this);
         }
     }
 }

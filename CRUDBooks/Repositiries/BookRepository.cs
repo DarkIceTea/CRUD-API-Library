@@ -18,17 +18,32 @@ namespace CRUDBooks.Repositiries
 
         public async Task<List<Book>> GetAllBooksAsync(CancellationToken cancellationToken)
         {
-            return await dataContext.Books.ToListAsync(cancellationToken);
+            var books = await dataContext.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .ToListAsync(cancellationToken);
+
+            return books;
         }
 
         public async Task<Book> GetBookByIdAsync(int id, CancellationToken cancellationToken)
         {
-            return await dataContext.Books.FindAsync(id, cancellationToken);
+            var book = await dataContext.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+
+            return book;
         }
 
         public async Task<Book> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken)
         {
-            return await dataContext.Books.FirstOrDefaultAsync(b => b.ISBN == isbn, cancellationToken);
+            var book = await dataContext.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .FirstOrDefaultAsync(b => b.ISBN == isbn, cancellationToken);
+
+            return book;
         }
 
         public async Task AddBookAsync(Book book, CancellationToken cancellationToken)

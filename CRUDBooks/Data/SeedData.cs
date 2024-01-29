@@ -2,9 +2,16 @@
 
 namespace CRUDBooks.Data
 {
-    public static class SeedData
+    public class SeedData : IDataContextInitializer
     {
-        static public void Initialize(DataContext dataContext)
+        readonly DataContext dataContext;
+
+        public SeedData(DataContext dataContext)
+        {
+            this.dataContext = dataContext;
+        }
+
+        public void Initialize()
         {
             if (dataContext.Books.Any()) return;
 
