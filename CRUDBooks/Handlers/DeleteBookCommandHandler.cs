@@ -6,9 +6,9 @@ namespace CRUDBooks.Handlers
 {
     public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand>
     {
-        private readonly IBookCommandRepository bookCommandRepository;
+        private readonly IBookRepository bookCommandRepository;
 
-        public DeleteBookCommandHandler(IBookCommandRepository bookCommandRepository)
+        public DeleteBookCommandHandler(IBookRepository bookCommandRepository)
         {
             this.bookCommandRepository = bookCommandRepository;
         }

@@ -63,11 +63,14 @@
             
                 POST /book
                 {
-                   "isbn": "1234567890",
-                   "title": "Пример книги",
-                   "author": "Автор",
-                   "genre": "Жанр",
-                   "description": "Описание",
+                    {
+                    "title": "Dead Souls",
+                    "isbn": "978-5-93673-435-2",
+                    "description": "about Chichikov",
+                    "authorName": "Nikolay",
+                    "autorLastName": "Gogol",
+                    "genre": "Satire"
+                    }
                 }
             
             </remarks>
@@ -83,14 +86,14 @@
             
                 PUT /book
                 {
-                   "id": 1,
-                   "isbn": "1234567890",
-                   "title": "Пример изменённой книги",
-                   "author": "Автор",
-                   "genre": "Жанр",
-                   "description": "Описание",
-                   "whenTake": "2023-01-04T12:00:00",
-                   "whenReturn": "2023-01-14T12:00:00"
+                   {
+                    "title": "Dead Souls",
+                    "isbn": "978-5-93673-435-2",
+                    "description": "about Chichikov",
+                    "authorName": "Nikolay",
+                    "autorLastName": "Gogol",
+                    "genre": "Satire"
+                    }
                 }
             
             </remarks>

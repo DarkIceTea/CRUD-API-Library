@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUDBooks.Repositiries
 {
-    public class BookRepository : IBookQueryRepository, IBookCommandRepository
+    public class BookRepository : IBookRepository
     {
         private readonly DataContext dataContext;
 

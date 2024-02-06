@@ -7,16 +7,16 @@ namespace CRUDBooks.Handlers
 {
     public class GetBookByISBNQueryHandler : IRequestHandler<GetBookByISBNQuery, Book>
     {
-        private readonly IBookQueryRepository bookQueryRepository;
+        private readonly IBookRepository bookRepository;
 
-        public GetBookByISBNQueryHandler(IBookQueryRepository bookQueryRepository)
+        public GetBookByISBNQueryHandler(IBookRepository bookQueryRepository)
         {
-            this.bookQueryRepository = bookQueryRepository;
+            this.bookRepository = bookRepository;
         }
 
         async Task<Book> IRequestHandler<GetBookByISBNQuery, Book>.Handle(GetBookByISBNQuery request, CancellationToken cancellationToken)
         {
-            return await bookQueryRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
+            return await bookRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
         }
     }
 }

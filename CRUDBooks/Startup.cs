@@ -28,8 +28,7 @@ namespace CRUDBooks
             services.AddHttpContextAccessor();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
-            services.AddTransient<IBookCommandRepository, BookRepository>();
-            services.AddTransient<IBookQueryRepository, BookRepository>();
+            services.AddTransient<IBookRepository, BookRepository>();
 
             services.AddTransient<IRegistrationService, RegistrationService>();
             services.AddTransient<IAuthService, AuthService>();

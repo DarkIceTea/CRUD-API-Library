@@ -6,16 +6,16 @@ namespace CRUDBooks.Handlers
 {
     public class EditBookCommandHandler : IRequestHandler<EditBookCommand>
     {
-        private readonly IBookCommandRepository bookCommandRepository;
+        private readonly IBookRepository bookRepository;
 
-        public EditBookCommandHandler(IBookCommandRepository bookCommandRepository)
+        public EditBookCommandHandler(IBookRepository bookCommandRepository)
         {
-            this.bookCommandRepository = bookCommandRepository;
+            this.bookRepository = bookRepository;
         }
 
         async Task IRequestHandler<EditBookCommand>.Handle(EditBookCommand request, CancellationToken cancellationToken)
         {
-            await bookCommandRepository.EditBookAsync(request.UpdateBook, request.Id, cancellationToken);
+            await bookRepository.EditBookAsync(request.UpdateBook, request.Id, cancellationToken);
         }
     }
 }
