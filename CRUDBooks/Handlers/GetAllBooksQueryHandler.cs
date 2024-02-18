@@ -8,7 +8,7 @@ namespace CRUDBooks.Handlers
     public class GetAllBooksQueryHandler : IRequestHandler<GetAllBooksQuery, List<Book>>
     {
         private readonly IBookRepository bookRepository;
-        public GetAllBooksQueryHandler(IBookRepository bookQueryRepository)
+        public GetAllBooksQueryHandler(IBookRepository bookRepository)
         {
             this.bookRepository = bookRepository;
         }

@@ -1,6 +1,6 @@
 ﻿using CRUDBooks.Models;
 
-namespace CRUDBooks.Services
+namespace CRUDBooks.Services.ServiceInterfaces
 {
     public interface IAuthService
     {

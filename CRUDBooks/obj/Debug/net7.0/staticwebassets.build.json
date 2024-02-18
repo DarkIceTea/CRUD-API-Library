@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "yqyu1EqFX30/DetokF2Yc71deSLfYYfxr3Kclri25b0=",
+  "Hash": "SMmmoAGMGo/W7J8hPIoop9CVRFgAMQzX8PC38VdEbjQ=",
   "Source": "CRUDBooks",
   "BasePath": "_content/CRUDBooks",
   "Mode": "Default",
@@ -10,22 +10,24 @@
     {
       "Name": "CRUDBooks\\wwwroot",
       "Source": "CRUDBooks",
-      "ContentRoot": "I:\\Code\\work\\CRUD-API-Library\\CRUDBooks\\wwwroot\\",
+      "ContentRoot": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\",
       "BasePath": "_content/CRUDBooks",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "I:\\Code\\work\\CRUD-API-Library\\CRUDBooks\\wwwroot\\swagger.json",
+      "Identity": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\swagger.json",
       "SourceId": "CRUDBooks",
       "SourceType": "Discovered",
-      "ContentRoot": "I:\\Code\\work\\CRUD-API-Library\\CRUDBooks\\wwwroot\\",
+      "ContentRoot": "D:\\HereCode\\Work\\CRUDBooks\\CRUDBooks\\wwwroot\\",
       "BasePath": "_content/CRUDBooks",
       "RelativePath": "swagger.json",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",

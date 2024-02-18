@@ -1,6 +1,7 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using Microsoft.EntityFrameworkCore;
+using CRUDBooks.Exceptions;
 
 namespace CRUDBooks.Repositiries
 {
@@ -29,6 +30,10 @@ namespace CRUDBooks.Repositiries
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+            if(book is null)
+            {
+                throw new NotFoundException("Book not found");
+            }
 
             return book;
         }
@@ -39,6 +44,11 @@ namespace CRUDBooks.Repositiries
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
                 .FirstOrDefaultAsync(b => b.ISBN == isbn, cancellationToken);
+
+            if (book is null)
+            {
+                throw new NotFoundException("Book not found");
+            }
 
             return book;
         }
@@ -52,13 +62,12 @@ namespace CRUDBooks.Repositiries
         public async Task EditBookAsync(Book book, int id, CancellationToken cancellationToken)
         {
             Book existingBook = dataContext.Books.Find(id);
-            if (existingBook is null) throw new Exception();
+            if (book is null)
+            {
+                throw new NotFoundException("Book not found");
+            }
 
-            existingBook.Author = book.Author;
-            existingBook.Genre = book.Genre;
-            existingBook.ISBN = book.ISBN;
-            existingBook.Title = book.Title;
-            existingBook.Description = book.Description;
+            dataContext.Entry(existingBook).CurrentValues.SetValues(book);
 
             await dataContext.SaveChangesAsync(true, cancellationToken);
         }
@@ -66,11 +75,11 @@ namespace CRUDBooks.Repositiries
         public async Task DeleteBookAsync(int id, CancellationToken cancellationToken)
         {
             Book book = dataContext.Books.Find(id);
-
             if (book is null)
             {
-                throw new Exception("Book Not Found");
+                throw new NotFoundException("Book not found");
             }
+
             dataContext.Books.Remove(book);
             await dataContext.SaveChangesAsync(true, cancellationToken);
         }

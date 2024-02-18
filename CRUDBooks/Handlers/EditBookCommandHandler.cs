@@ -10,7 +10,7 @@ namespace CRUDBooks.Handlers
 
         public EditBookCommandHandler(IBookRepository bookCommandRepository)
         {
-            this.bookRepository = bookRepository;
+            this.bookRepository = bookCommandRepository;
         }
 
         async Task IRequestHandler<EditBookCommand>.Handle(EditBookCommand request, CancellationToken cancellationToken)

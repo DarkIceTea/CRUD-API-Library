@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using CRUDBooks.Queries;
 using CRUDBooks.Commands;
 using MediatR;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using CRUDBooks.Dto;
 using Mapster;
+using CRUDBooks.Services.ServiceInterfaces;
 
 namespace CRUDBooks.Controllers
 {
@@ -16,21 +15,11 @@ namespace CRUDBooks.Controllers
     [Authorize]
     public class BookController : Controller
     {
-        private readonly IMediator mediator;
-        
+        private readonly IBookService bookService;
 
-        public BookController(IMediator mediator)
+        public BookController(IMediator mediator, IBookService bookService)
         {
-            this.mediator = mediator;
-
-            TypeAdapterConfig<BookDto, Book>.NewConfig()
-                .Map(dest => dest.Author, src => new Author { FirstName = src.AuthorName, LastName = src.AutorLastName})
-                .Map(dest => dest.Genre, src => new Genre { Name = src.Genre });
-
-            TypeAdapterConfig<Book, BookDto>.NewConfig()
-                .Map(dest => dest.AuthorName, src => src.Author.FirstName)
-                .Map(dest => dest.AutorLastName, src => src.Author.LastName)
-                .Map(dest => dest.Genre, src => src.Genre.Name);
+            this.bookService = bookService;
         }
 
         /// <summary>
@@ -39,11 +28,8 @@ namespace CRUDBooks.Controllers
         [HttpGet("/books")]
         public async Task<IActionResult> GetAllBooks()
         {
-            var query = new GetAllBooksQuery();
-            List<Book> books = await mediator.Send(query);
-
-            List<BookDto> booksDto = books.Adapt<List<BookDto>>();
-            return Json(booksDto);
+            List<BookDto> bookList = await bookService.GetAllBooks();
+            return Ok(bookList);
         }
 
         /// <summary>
@@ -53,15 +39,8 @@ namespace CRUDBooks.Controllers
         [HttpGet("/book/{id}")]
         public async Task<IActionResult> GetBookById(int id)
         {
-            var query = new GetBookByIdQuery() {BookId = id};
-            Book book = await mediator.Send(query);
-            if (book is null)
-            {
-                return NotFound();
-            }
-
-            BookDto bookDto = book.Adapt<BookDto>();
-            return Json(bookDto);
+            BookDto book = await bookService.GetBookById(id);
+            return Ok(book);
         }
 
         /// <summary>
@@ -71,15 +50,8 @@ namespace CRUDBooks.Controllers
         [HttpGet("/book/ISBN/{isbn}")]
         public async Task<IActionResult> GetBookByISBN(string isbn)
         {
-            var query = new GetBookByISBNQuery() { ISBN = isbn};
-            var book = await mediator.Send(query);
-            if (book is null)
-            {
-                return NotFound();
-            }
-
-            BookDto bookDto = book.Adapt<BookDto>();
-            return Json(bookDto);
+            BookDto book = await bookService.GetBookByISBN(isbn);
+            return Ok(book);
         }
 
         /// <summary>
@@ -109,16 +81,7 @@ namespace CRUDBooks.Controllers
         [HttpPost("/book")]
         public async Task<IActionResult> AddBook([FromBody]BookDto bookDto)
         {
-            if (bookDto is null)
-            {
-                return BadRequest();
-            }
-
-            Book book = bookDto.Adapt<Book>();
-
-            var command = new AddBookCommand { Book = book };
-            await mediator.Send(command);
-            
+            bookService.AddBook(bookDto);
             return Ok();
         }
 
@@ -149,23 +112,8 @@ namespace CRUDBooks.Controllers
         [HttpPut("/book/{id}")]
         public async Task<IActionResult> EditBook(int id, [FromBody] BookDto updateBookDto)
         {
-            if (updateBookDto is null)
-            {
-                return BadRequest();
-            }
-
-            Book updateBook = updateBookDto.Adapt<Book>();
-
-            try
-            {
-                var command = new EditBookCommand { Id = id, UpdateBook = updateBook };
-                await mediator.Send(command);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            bookService.EditBook(updateBookDto, id);
+            return Ok();
         }
 
         /// <summary>
@@ -177,16 +125,8 @@ namespace CRUDBooks.Controllers
         [HttpDelete("/book/{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            try
-            {
-                var command = new DeleteBookCommand { Id = id };
-                await mediator.Send(command);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            bookService.DeleteBook(id);
+            return Ok();
         }
     }
 }

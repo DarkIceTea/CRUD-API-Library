@@ -9,7 +9,7 @@ namespace CRUDBooks.Handlers
     {
         private readonly IBookRepository bookRepository;
 
-        public GetBookByISBNQueryHandler(IBookRepository bookQueryRepository)
+        public GetBookByISBNQueryHandler(IBookRepository bookRepository)
         {
             this.bookRepository = bookRepository;
         }

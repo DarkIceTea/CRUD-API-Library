@@ -8,9 +8,9 @@ namespace CRUDBooks.Handlers
     {
         private readonly IBookRepository bookCommandRepository;
 
-        public DeleteBookCommandHandler(IBookRepository bookCommandRepository)
+        public DeleteBookCommandHandler(IBookRepository bookRepository)
         {
-            this.bookCommandRepository = bookCommandRepository;
+            this.bookCommandRepository = bookRepository;
         }
 
         async Task IRequestHandler<DeleteBookCommand>.Handle(DeleteBookCommand request, CancellationToken cancellationToken)

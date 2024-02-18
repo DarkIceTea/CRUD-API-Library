@@ -1,4 +1,4 @@
-﻿namespace CRUDBooks.Services
+﻿namespace CRUDBooks.Services.ServiceInterfaces
 {
     public interface ITokenService
     {

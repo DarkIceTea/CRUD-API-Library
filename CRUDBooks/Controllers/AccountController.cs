@@ -1,7 +1,7 @@
 ﻿using CRUDBooks.Data;
 using CRUDBooks.Models;
 using Microsoft.AspNetCore.Mvc;
-using CRUDBooks.Services;
+using CRUDBooks.Services.ServiceInterfaces;
 
 namespace CRUDBooks.Controllers
 {

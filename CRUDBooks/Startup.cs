@@ -1,8 +1,12 @@
-﻿using CRUDBooks.Data;
+﻿using CRUDBooks.Configuration;
+using CRUDBooks.Data;
 using CRUDBooks.Extensions;
+using CRUDBooks.Middleware;
 using CRUDBooks.Repositiries;
 using CRUDBooks.Services;
+using CRUDBooks.Services.ServiceInterfaces;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace CRUDBooks
 {
@@ -21,8 +25,9 @@ namespace CRUDBooks
             services.AddAuthorization();
             services.AddCustomAuthentication();
 
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));    // добавляем контекст ApplicationContext в качестве сервиса в приложение
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);    // добавляем контекст ApplicationContext в качестве сервиса в приложение
             services.AddTransient<IDataContextInitializer, SeedData>();
+            services.AddTransient<MappsterConfiguration, MappsterConfiguration>();
 
             services.AddControllers();
             services.AddHttpContextAccessor();
@@ -33,11 +38,12 @@ namespace CRUDBooks
             services.AddTransient<IRegistrationService, RegistrationService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IBookService, BookService>();
 
             services.AddCustomSwagger();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDataContextInitializer dataContextInitializer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDataContextInitializer dataContextInitializer, MappsterConfiguration mappsterConfiguration)
         {
             if (env.IsDevelopment())
             {
@@ -48,9 +54,11 @@ namespace CRUDBooks
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            mappsterConfiguration.Configure();
 
             dataContextInitializer.Initialize();
 
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint(@"v1/swagger.json", "CRUD API Library"));
 
